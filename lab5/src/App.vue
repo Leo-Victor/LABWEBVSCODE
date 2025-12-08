@@ -49,15 +49,15 @@ function addPost(post) {
   <div class="col-sm-8">
     <h1>Thông tin cá nhân</h1>
     <form>
-      <div class="mb-3">
-        <label>Họ và Tên:</label>
+      <div class="mb-3 text-start">
+        <label >Họ và Tên:</label>
         <input v-model="userInfo.name" type="text" class="form-control" placeholder="Nhập họ và tên" />
       </div>
-      <div class="mb-3">
+      <div class="mb-3 text-start">
         <label>Tuổi:</label>
         <input v-model="userInfo.age" type="number" class="form-control" placeholder="Nhập tuổi" />
       </div>
-      <div class="mb-3">
+      <div class="mb-3 text-start">
         <label>Email:</label>
         <input v-model="userInfo.email" type="email" class="form-control" placeholder="Nhập email" />
       </div>
@@ -84,6 +84,7 @@ function addPost(post) {
 </template>
 
 <style scoped>
+  
 input,
 textarea {
     display: block;
@@ -92,6 +93,7 @@ textarea {
     padding: 10px;
     border-radius: 5px;
     border: 1px solid #ddd;
+    margin-bottom: 12px;
 }
 
 button {

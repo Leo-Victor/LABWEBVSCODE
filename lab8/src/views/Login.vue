@@ -7,6 +7,7 @@
         <div class="mb-3">
           <label class="form-label">Tên đăng nhập</label>
           <input type="text" class="form-control" v-model="username" placeholder="admin" required>
+          <!-- required là cố định nhập thì mới vô được -->
         </div>
 
         <div class="mb-3">

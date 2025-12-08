@@ -35,31 +35,59 @@ const month = ref(1);
 import img1 from "./assets/image/img1.jpg";
 import img2 from "./assets/image/img2.jpg";
 import img3 from "./assets/image/img3.jpg";
-// 2. Bọc mảng items trong ref() để Vue theo dõi thay đổi
-const items = ref([
+// Định nghĩa Interface để fix lỗi TypeScript (như đã nói ở bước trước)
+interface Article {
+  title: string;
+  desc: string;
+  image: string;
+}
+
+const articles = ref<Article[]>([
   {
     title: '8 loại rau củ quả giàu canxi',
-    content: 'Canxi là khoáng chất cần thiết đối với cơ thể người. Có nhiều cách để bổ sung canxi, trong đó bổ sung qua đường ăn uống là cách tốt nhất.',
-    image: img1
+    desc: 'Canxi là khoáng chất cần thiết đối với cơ thể người...',
+    // SỬA Ở ĐÂY: Dùng biến img1 (không có dấu nháy ' ')
+    image: img1 
   },
   {
     title: 'Các loại gia vị tốt cho sức khỏe',
-    content: 'Một số loại gia vị cung cấp nhiều polyphenol chống oxy hóa cao hơn các loại gia vị quen thuộc khác.',
+    desc: 'Một số loại gia vị cung cấp nhiều polyphenol...',
+    // SỬA Ở ĐÂY: Dùng biến img2
     image: img2
   },
   {
     title: '9 loại đậu bổ dưỡng nên dùng nhiều',
-    content: 'Đậu lăng, đậu nành, đậu phộng, đậu Hà Lan giàu chất xơ, protein cùng nhiều vitamin và khoáng chất.',
+    desc: 'Đậu lăng, đậu nành, đậu phộng...',
+    // SỬA Ở ĐÂY: Dùng biến img3
     image: img3
-  },
+  }
 ]);
 
+// Hàm xử lý sự kiện
+const viewDetail = (item: Article) => {
+  console.log('Bạn đã chọn bài:', item.title);
+};
+
 //Bài 4
+
+import { onMounted } from 'vue';
+import { useStore } from 'vuex';
+
+const store = useStore();
+
+onMounted(() => {
+  // Gọi mutation ngay khi App tải xong để đảm bảo localStorage tồn tại
+  store.commit('checkNumberOfGames'); 
+});
+
+
 // 1. Khởi tạo dữ liệu mẫu ban đầu [cite: 182]
 const students = ref([
   { name: 'Nguyễn Chí Hùng', score: 8, dob: '2006-01-01' },
   { name: 'Phạm Thị Lan', score: 9, dob: '2006-05-15' }
 ]);
+
+
 
 // 2. Biến quản lý trạng thái form và chế độ sửa [cite: 187, 192, 193]
 const student = ref({
@@ -70,6 +98,8 @@ const student = ref({
 
 const isEditing = ref(false);
 const editingIndex = ref<number | null>(null);
+
+
 
 // 3. Hàm xử lý khi nhấn nút Thêm/Cập nhật [cite: 198]
 function submitForm() {
@@ -146,20 +176,28 @@ function resetForm() {
   <!-- Bài 3 -->
   <h1>Bài 3</h1>
   <br>
-  <div class="container mt-5">
-    <h1 class="text-center mb-4">Kiến thức sức khỏe cộng đồng</h1>
-    <div class="row">
-      <div class="col-sm-4 mb-4" v-for="(item, index) in items" :key="index">
-        <div class="card">
-          <img :src="item.image" class="img-fluid" alt="Hình ảnh" />
-          <div class="card-body">
-            <h3 class="card-title">{{ item.title }}</h3>
-            <p class="card-text">{{ item.content }}</p>
-            <button class="btn btn-info">Xem chi tiết</button>
-          </div>
+  <div class="container">
+    <h2 class="section-title">Kiến thức sức khỏe cộng đồng</h2>
+
+    <div class="card-list">
+      <div 
+        v-for="(item, index) in articles" 
+        :key="index" 
+        class="card"
+      >
+        <div class="image-wrapper">
+          <img :src="item.image" :alt="item.title" />
+        </div>
+        
+        <div class="card-content">
+          <h3>{{ item.title }}</h3>
+          <p>{{ item.desc }}</p>
+          
+          <button class="btn-detail" @click="viewDetail(item)">
+            Xem chi tiết
+          </button>
         </div>
       </div>
-
     </div>
   </div>
 
@@ -221,18 +259,104 @@ function resetForm() {
 </template>
 
 <style scoped>
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+  font-family: 'Arial', sans-serif;
 }
 
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
+.section-title {
+  text-align: center;
+  margin-bottom: 30px;
+  font-size: 28px;
+  color: #333;
+  font-weight: 600;
 }
 
-.logo.vue:hover {
-  filter: drop-shadow(0 0 2em #42b883aa);
+/* --- FLEXBOX LAYOUT --- */
+.card-list {
+  display: flex;
+  gap: 30px; /* Khoảng cách giữa các card */
+  justify-content: center;
+}
+
+.card {
+  flex: 1; /* Chia đều 3 cột */
+  display: flex;
+  flex-direction: column;
+  background: #fff;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  transition: transform 0.2s ease;
+}
+
+.card:hover {
+  transform: translateY(-5px); /* Hiệu ứng nhấc nhẹ khi hover */
+  box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+.image-wrapper {
+  width: 100%;
+  height: 200px;
+  overflow: hidden;
+}
+
+.image-wrapper img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* Giữ ảnh đẹp, không méo */
+}
+
+.card-content {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1; /* Đẩy nội dung lấp đầy khoảng trống */
+  text-align: center;
+}
+
+.card-content h3 {
+  margin-top: 0;
+  font-size: 18px;
+  color: #333;
+  min-height: 48px; /* Giữ tiêu đề thẳng hàng */
+  display: -webkit-box;
+  -webkit-line-clamp: 2; /* Cắt bớt nếu tiêu đề quá 2 dòng */
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.card-content p {
+  font-size: 14px;
+  color: #666;
+  line-height: 1.6;
+  margin-bottom: 20px;
+  flex-grow: 1; /* Đẩy nút xuống dưới cùng */
+}
+
+.btn-detail {
+  align-self: center;
+  background-color: #00bfff;
+  color: white;
+  border: none;
+  padding: 10px 25px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background 0.3s;
+}
+
+.btn-detail:hover {
+  background-color: #009acd;
+}
+
+/* Responsive cho Mobile */
+@media (max-width: 768px) {
+  .card-list {
+    flex-direction: column;
+  }
 }
 </style>
